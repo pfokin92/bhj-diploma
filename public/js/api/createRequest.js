@@ -3,30 +3,22 @@
  * на сервер.
  * */
 const createRequest = (options, callback) => {
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    if(options.responseType){
-        xhr.responseType = options.responseType;
-        xhr.setRequestHeader = options.headers;
-    }
+    let xhr = new XMLHttpRequest();
+
     xhr.withCredentials = true;
+    xhr.responseType = options.responseType;
+
     let url, formData = {};
 
-    if (options.method === 'GET' && options.id){
-        url = options.url + '/'+ options.id;
-    } 
-    else if (options.method === 'GET'){
+    if (options.method === 'GET'){
         url = options.url + '?';
         for(let key in options.data){
             url += key + "=" + options.data[key] + '&';
-            url = url.slice(0,-1);
+            
         }
-    }
-    else {
-        formData = new FormData;
-
-        url = options.url;
-
+        url = url.slice(0,-1);
+    } else {
+        formData = new formData();
         for (let key in options.data)
         {
             formData.append(key, options.data[key]);
@@ -35,21 +27,25 @@ const createRequest = (options, callback) => {
 
     xhr.open(options.method, url);
 
-    xhr.send(formData);
+    // xhr.send(formData);
 
     xhr.onload = () =>{
         if (xhr.response.success){
             callback (null, xhr.response);
         }
-        else {
-            return callback(xhr.response);
-        }
     }
 
-    xhr.onerror = () => {alert('Ошибка сервера');}
-    console.log(xhr);
+    try {
+        xhr.send(formData);
 
-    return xhr.response;
+    }
+    catch (err){
+        options.callback(err);
+    }
 
+
+    
+    // xhr.onerror = () => {alert('Ошибка сервера');}
+    return xhr;
 
 };
