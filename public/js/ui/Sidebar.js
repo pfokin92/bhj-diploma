@@ -10,6 +10,7 @@ class Sidebar {
   static init() {
     this.initAuthLinks();
     this.initToggleButton();
+
   }
 
   /**
@@ -18,7 +19,13 @@ class Sidebar {
    * при нажатии на кнопку .sidebar-toggle
    * */
   static initToggleButton() {
+    const sidebarOpen = document.querySelector('.sidebar-toggle');
 
+    sidebarOpen.addEventListener('click',(e)=>{
+      const body = document.body;
+      body.classList.toggle('sidebar-open');
+      body.classList.toggle('sidebar-collapse');
+    });
   }
 
   /**

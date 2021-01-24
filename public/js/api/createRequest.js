@@ -18,7 +18,7 @@ const createRequest = (options, callback) => {
         }
         url = url.slice(0,-1);
     } else {
-        formData = new formData();
+        formData = new formData(form);
         for (let key in options.data)
         {
             formData.append(key, options.data[key]);
