@@ -36,24 +36,22 @@ class User {
    * авторизованном пользователе.
    * */
   static fetch( data, callback = f => f ) {
-    if(User.current()) {
-      const xhr = createRequest({
-        method: 'GET',
-        responseType = 'json',
-        url: this.URL + '/current',
-        data: data},
-        (err, response) =>{
-          if(response){
-            User.setCurrent(response.user);
-          }
-          else {
-            User.unsetCurrent();
-            console.log(err);
-          }
-          callback(err,response);
+    const xhr = createRequest({
+      method: 'GET',
+      responseType: 'json',
+      url: this.URL + '/current',
+      data: data,
+      callback: (err, response) =>{
+        if(response){
+          User.setCurrent(response.user);
         }
-      );
-    }
+        else {
+          User.unsetCurrent();
+          console.log(err);
+        }
+        callback(err,response);
+      }
+    });
 
   }
 
@@ -68,14 +66,14 @@ class User {
       method: 'POST',
       responseType: 'json',
       url: this.URL + '/login',
-      data: data},
-      (err, response) =>{
+      data: data,
+      callback: (err, response) =>{
         if(response){
           User.setCurrent(response.user);
         }
         callback(err, response);
       }
-    );
+    });
 
   }
 
@@ -90,14 +88,14 @@ class User {
       method: 'POST',
       responseType: 'json',
       url: this.URL + '/register',
-      data: data},
-      (err, response) => {
+      data: data,
+      callback:(err, response) => {
         if(response){
           User.setCurrent(response.user);
         }
         callback(err, response);
       }
-    );
+    });
   }
 
   /**
@@ -109,13 +107,13 @@ class User {
       method: 'POST',
       responseType: 'json',
       url: this.URL + '/login',
-      data: data},
-      (err, response) => {
+      data: data,
+      callback:(err, response) => {
         if (response){
           User.unsetCurrent();
         }
         callback(err, response);
       }
-      );
+    });
   }
 }
