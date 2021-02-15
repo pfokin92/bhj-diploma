@@ -2,50 +2,51 @@
  * Основная функция для совершения запросов
  * на сервер.
  * */
-const createRequest = (options, callback) => {
-    let xhr = new XMLHttpRequest();
+const createRequest = (options = {}) => {
 
+    let xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
     xhr.responseType = options.responseType;
 
-    let url, formData = {};
-
-    if (options.method === 'GET'){
-        url = options.url + '?';
-        for(let key in options.data){
-            url += key + "=" + options.data[key] + '&';
-            
+    if (options.method === 'GET') {
+        let url = options.url;
+        if (options.data) {
+            url += '?';
+            let data = options.data;
+            for (let key in data) {
+                url += key + '=' + data[key] + '&';
+            }
+            url = url.slice(0,-1);
         }
-        url = url.slice(0,-1);
+
+        try {
+            if(url) {
+                xhr.open(options.method, url, true);
+                xhr.send();
+            }
+        } catch (e) {
+            options.callback(e);
+        }
     } else {
-        formData = new formData(form);
-        for (let key in options.data)
-        {
-            formData.append(key, options.data[key]);
+        let formData = new FormData();
+        for (let key in options.data) {
+            formData.append( key, options.data[key]);
+        }
+        try {
+            xhr.open(options.method, options.url, true);
+            xhr.send(formData);
+        } catch (e) {
+            options.callback(e);
         }
     }
 
-    xhr.open(options.method, url);
-
-    // xhr.send(formData);
-
-    xhr.onload = () =>{
-        if (xhr.response.success){
-            callback (null, xhr.response);
+    xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+            let err = null;
+            let response = xhr.response;
+            options.callback(err, response);
         }
-    }
+    });
 
-    try {
-        xhr.send(formData);
-
-    }
-    catch (err){
-        options.callback(err);
-    }
-
-
-    
-    // xhr.onerror = () => {alert('Ошибка сервера');}
     return xhr;
-
 };

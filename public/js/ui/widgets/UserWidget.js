@@ -11,12 +11,10 @@ class UserWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-    if(element){
-      this.element = element;
+    if (!element) {
+      throw new Error('Элемент не существует');
     }
-    else {
-      throw new Error('Element not found')
-    }
+    this.element = element;
   }
 
   /**
@@ -27,9 +25,9 @@ class UserWidget {
    * авторизованного пользователя
    * */
   update() {
-    const userAuthorized = { name: User.current().name };
-    if (userAuthorized){
-      this.element.querySelector('.user-name').innerHTML = userAuthorized.name;
+    let user = User.current();
+    if (user) {
+      this.element.querySelector('.user-name').textContent = user.name;
     }
   }
 }

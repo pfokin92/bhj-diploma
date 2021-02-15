@@ -7,18 +7,18 @@
 class Modal {
   /**
    * Устанавливает текущий элемент в свойство element
-   * Регистрирует обработчики событий с помощью Modal.registerEvents()
+   * Регистрирует обработчики событий с помощью
+   * AccountsWidget.registerEvents()
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-    if(element){
-      this.element = element;
-      this.registerEvents(this.element);
+    if (!element) {
+      throw new Error('Элемент не существует');
     }
-    else {
-      throw new Error('Элемент не найден!');
-    }
+    this.element = element;
+    this.registerEvents();
+
   }
 
   /**
@@ -27,7 +27,10 @@ class Modal {
    * (с помощью метода Modal.onClose)
    * */
   registerEvents() {
-    this.element.addEventListener('click', this.onClose.bind(this));
+    this.closeBtnArr = this.element.querySelectorAll('button[data-dismiss="modal"]');
+    for (let closeBtn of this.closeBtnArr) {
+      closeBtn.addEventListener('click', (e) => this.onClose(e));
+    }
   }
 
   /**
@@ -35,28 +38,30 @@ class Modal {
    * Закрывает текущее окно (Modal.close())
    * */
   onClose( e ) {
-    if(e.target.closest('[data-dismiss="modal"]')){
-      this.close(this.element);
-      this.unregisterEvents();
-    }
+    e.preventDefault();
+    this.close();
   }
   /**
    * Удаляет обработчики событий
    * */
   unregisterEvents() {
-    this.element.removeEventListener('click', this.onClose.bind(this));
+    for (let closeBtn of this.closeBtnArr) {
+      closeBtn.removeEventListener('click', (e) => this.onClose(e));
+    }
   }
+
   /**
    * Открывает окно: устанавливает CSS-свойство display
    * со значением «block»
    * */
   open() {
     this.element.style.display = 'block';
+
   }
   /**
    * Закрывает окно: удаляет CSS-свойство display
    * */
-  close(){
+  close() {
     this.element.style.display = '';
   }
 }
